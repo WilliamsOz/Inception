@@ -4,8 +4,10 @@
 # -x : Affiche les commandes et leurs arguments au fur et a mesure de leurs execution
 #set -eux
 
+sleep 10
 cd /var/www/html/wordpress
 
+# Si le fichier de configuration de wordpress n'existe pas alors on le creer
 if ! wp core is-installed; then
 wp config create	--allow-root --dbname=${SQL_DATABASE} \
 			--dbuser=${SQL_USER} \
