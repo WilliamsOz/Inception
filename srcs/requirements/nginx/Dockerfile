@@ -24,5 +24,9 @@ COPY ./conf/nginx.conf /etc/nginx/nginx.conf
 RUN chmod 755 /var/www/html
 RUN chown -R www-data:www-data /var/www/html
 
-# Lancement de NGINX au premier plan pour ne pas que le conteneur se stop
+# nginx : lancement du serveur Nginx a l'interieur du conteneur.
+# -g : permet de definir des variables de configuration specifique pour nginx.
+# daemon off : La variables de conf "daemon" est off au lancement du conteneur,
+# cela permet a nginx de s'executer en premier plan plutot qu'en arriere plan,
+# et ainsi de rester actif et gerer les requete http sans sortir de l'execution.
 ENTRYPOINT ["nginx", "-g", "daemon off;"]

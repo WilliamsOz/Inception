@@ -1,0 +1,82 @@
+version: '3'
+
+services:
+  mariadb:
+    image: mariadb                  # nom de l'image.
+    container_name: mariadb         # nom du conteneur.
+    networks:
+      - inception                   # a qu'elle reseau il appartient.
+    build:
+      context: ./requirements/mariadb   # ou se trouve son Dockerfile.
+      dockerfile: Dockerfile          # le nom du Dockerfile.
+    env_file: .env                  # le fichier d'env contenant les variables d'env.
+    volumes:
+      - mariadb:/var/lib/mysql
+    restart: unless-stopped         # redemarre tant qu'il n'est pas stoppe.
+    expose:                         # le port a exposer.
+      - "3306"
+    healthcheck:                                                      # Verification de l'etat de sante d'un service, celle ci permet de s'assurer que le service est en cours d'execution et fiable.
+      test: mysqladmin ping --host=localhost -p${SQL_ROOT_PASSWORD}   # C'est la commande utilisee pour tester l'etat de sante du service, une requete ping est envoyer au serveur MYSQL pour verifier sa dispo.
+      interval: 5s                                                    # L'intervalle entre chaque verification.
+      timeout: 1s                                                     # Duree maximale autorisee pour une verif, si elle prend plus de temps que la duree specifiee, elle est consideree comme un echec.
+      retries: 20                                                     # Nombre maximum de tentatives pour la verif avant de considerer le service comme non fonctionnel.
+      start_period: 5s                                                # Periode d'attente avant de commencer la verification.
+
+  nginx:
+    image: nginx
+    container_name: nginx
+    volumes:
+      - wordpress:/var/www/html/wordpress
+    networks:
+      - inception
+    depends_on:                   # Ne pas demarrer NGINX tant que WORDPRESS n'a pas demarre.
+      - wordpress
+    build:
+      context: ./requirements/nginx
+      dockerfile: Dockerfile
+    env_file: .env
+    ports:
+      - "443:443"                   # Le port 443 sera expose a la machine locale.
+    restart: unless-stopped        # Le conteneur redemarrera toujours le service, sauf si l'arret est fait par l'utilisateur
+    healthcheck:
+      test: 'curl -kfsSL https://localhost:443/status'  #Envoi une requete HTTP a l'url https://localhost:443/status en utilisant curl. Les options "-kfsSL" sont utilisees pour ignorer les erreur de certificat SSL -k, silencieusement -s, suivant les redirection -L, et afficher les erreurs en cas d'echec -S.
+      interval: 5s
+      timeout: 1s
+      retries: 10
+      start_period: 5s
+
+  wordpress:
+    image: wordpress
+    container_name: wordpress
+    env_file: .env
+    volumes:
+      - wordpress:/var/www/html/wordpress
+    networks:
+      - inception
+    build:
+      context: ./requirements/wordpress
+      dockerfile: Dockerfile
+    depends_on:                       # WORDPRESS demarrera uniquement apres MARIADB, sinon il ne peut pas configurer la BDD.
+      mariadb:
+        condition: service_healthy  # Le conteneur demarrera uniquement si le conteneur mariadb est considerer comme sain.
+    restart: unless-stopped
+    expose:
+      - "9000"
+    
+volumes:
+  mariadb:
+    driver: local                             # Stockage du volume en local.
+    driver_opts:
+      type: 'none'                              # Aucun type specifique.
+      o: 'bind'                                 # o signifie "options", bind signifie que l'on souhaite effectuer un montage de type "bind mount" ou montage par liaison. Cela permet de partager des donnees entre l'hote et le conteneur de maniere transparente.
+      device: '/home/wiozsert/data/mariadb'     # Ou stocker le dossier en local.
+  wordpress:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/home/wiozsert/data/wordpress'
+
+networks:
+  inception:
+    driver: bridge                # Specifie le pilote reseau que Docker utilise pour creer le reseau. C'est le pilote par defaut qui permet aux conteneurs de communiquer entre eux sur le meme hote via un reseau local (bridge est le pilote par defaut).

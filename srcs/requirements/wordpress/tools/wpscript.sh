@@ -1,20 +1,25 @@
 #!/bin/bash
-# -e : Quitte immediatement si une commande existe avec un etat != 0
-# -u : Traite les variables non definies comme une erreur lors de la substitution
-# -x : Affiche les commandes et leurs arguments au fur et a mesure de leurs execution
+# -e : Quitte immediatement si une commande echoue.
+# -u : Traite les variables non definies comme une erreur lors de la substitution.
+# -x : Affiche les commandes et leurs arguments au fur et a mesure de leurs execution.
 #set -eux
 
-sleep 10
 cd /var/www/html/wordpress
 
-# Si le fichier de configuration de wordpress n'existe pas alors on le creer
+# Par precaution on fait un sleep 10 afin d'etre certain que la base de donnees
+# mariadb a eu le temp de se lancer correctement
+sleep 10
+
 if ! wp core is-installed; then
-wp config create	--allow-root --dbname=${SQL_DATABASE} \
+# Si le fichier de configuration de wordpress n'existe pas alors on le creer
+wp config create	--allow-root \
+			--dbname=${SQL_DATABASE} \
 			--dbuser=${SQL_USER} \
 			--dbpass=${SQL_PASSWORD} \
 			--dbhost=${SQL_HOST} \
 			--url=https://${DOMAIN_NAME};
 
+# Configuration du premiere utilisateur
 wp core install	--allow-root \
 			--url=https://${DOMAIN_NAME} \
 			--title=${SITE_TITLE} \
@@ -22,11 +27,13 @@ wp core install	--allow-root \
 			--admin_password=${ADMIN_PASSWORD} \
 			--admin_email=${ADMIN_EMAIL};
 
+# Ajout d'un autre utilisateur
 wp user create		--allow-root \
 			${USER1_LOGIN} ${USER1_MAIL} \
 			--role=author \
 			--user_pass=${USER1_PASS} ;
 
+# Nettoyage du cache wp, --allow-root permet d'autoriser l'execution de la commande en tant que root
 wp cache flush --allow-root
 
 # Il fournit une interface facile à utiliser pour créer des formulaires de contact personnalisés
@@ -45,6 +52,7 @@ wp rewrite structure '/%postname%/'
 
 fi
 
+# Creation du dossier php si non existant
 if [ ! -d /run/php ]; then
 	mkdir /run/php;
 fi
