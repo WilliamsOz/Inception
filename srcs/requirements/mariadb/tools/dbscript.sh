@@ -26,9 +26,13 @@ mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${SQL_ROOT_PASSWORD}';"
 mysql -e "FLUSH PRIVILEGES;"
 
 # Arret de mysql
-mysqladmin -u root -p$SQL_ROOT_PASSWORD shutdown
+mysqladmin -u root -p${SQL_ROOT_PASSWORD} shutdown
+
 # Demarrage securise du server mysql, cette commande ajoute des fonctionnalites
 # de securite comme le redemarrage du serveur lorsqu'une erreur a lieu.
 # De plus elle permet la journalisation des informations d'execution dans
 # un journal des erreurs
 exec mysqld_safe
+
+#print status
+echo "MariaDB database and user were created successfully! "
