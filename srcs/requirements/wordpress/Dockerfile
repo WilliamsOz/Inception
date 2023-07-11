@@ -12,15 +12,15 @@ RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.ph
     && mv wp-cli.phar /usr/local/bin/wp
 
 # -P permet de specifier dans quel dossier on veut dl le fichier
-RUN wget https://wordpress.org/wordpress-6.1.1.tar.gz -P /var/www/html
-# Extraction + suppression du .tar.gz
-RUN cd /var/www/html && tar -xzf /var/www/html/wordpress-6.1.1.tar.gz && rm /var/www/html/wordpress-6.1.1.tar.gz
+# RUN wget https://wordpress.org/wordpress-6.1.1.tar.gz -P /var/www/html
+# # Extraction + suppression du .tar.gz
+# RUN cd /var/www/html && tar -xzf /var/www/html/wordpress-6.1.1.tar.gz && rm /var/www/html/wordpress-6.1.1.tar.gz
 
 # Mise a jour des droit pour s'assurer que le serveur Web (nginx) dispose
 # des autorisations necessaires pour lire et executer les fichiers
 # dans le repertoire racine Web 
-RUN chown -R www-data:www-data /var/www/*
-RUN chmod -R 755 /var/www/*
+# RUN chown -R www-data:www-data /var/www/*
+# RUN chmod -R 755 /var/www/*
 
 # Exposition du port 9000
 EXPOSE 9000

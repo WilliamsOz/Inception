@@ -56,7 +56,7 @@ services:
     build:
       context: ./requirements/wordpress
       dockerfile: Dockerfile
-    depends_on:                       # WORDPRESS demarrera uniquement apres MARIADB, sinon il ne peut pas configurer la BDD.
+    depends_on:                    # WORDPRESS demarrera uniquement apres MARIADB, sinon il ne peut pas configurer la BDD.
       mariadb:
         condition: service_healthy  # Le conteneur demarrera uniquement si le conteneur mariadb est considerer comme sain.
     restart: unless-stopped
