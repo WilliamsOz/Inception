@@ -1,21 +1,19 @@
 #!/bin/bash
-# -e : Quitte immediatement si une commande echoue.
-# -u : Traite les variables non definies comme une erreur lors de la substitution.
-# -x : Affiche les commandes et leurs arguments au fur et a mesure de leurs execution.
-# set -eux
 
 if [ -f /var/www/html/wordpress/wp-config.php ]
 
 then
-	echo "already exist"
+	echo "Wordpress is already installed."
+
 else
+	echo "Installation of Wordpress will start..."
+
 	cd /var/www/html/wordpress
 
-	# Par precaution on fait un sleep 10 afin d'etre certain que la base de donnees
-	# mariadb a eu le temp de se lancer correctement
-	# sleep 10
+	# sleep 2
 
-	wp core download --locale=en_US --allow-root
+	# Installation de wordpress
+	wp core download --locale=fr_FR --allow-root
 	# Si le fichier de configuration de wordpress n'existe pas alors on le creer
 	wp config create	--allow-root \
 				--dbname=${SQL_DATABASE} \
@@ -38,23 +36,6 @@ else
 				--role=author \
 				--user_pass=${USER1_PASS} ;
 
-	# # Nettoyage du cache wp, --allow-root permet d'autoriser l'execution de la commande en tant que root
-	# wp cache flush --allow-root
-
-	# # Il fournit une interface facile à utiliser pour créer des formulaires de contact personnalisés
-	# # et gérer les soumissions, ainsi que pour prendre en charge diverses techniques anti-spam
-	# wp plugin install contact-form-7 --activate
-
-	# # Passage de la langue du site en anglais
-	# wp language core install en_US --activate
-
-	# # Suppression des theme et plugins par defaut
-	# wp theme delete twentynineteen twentytwenty
-	# wp plugin delete hello
-
-	# # Definie la structure du permalink
-	# wp rewrite structure '/%postname%/'
-
 fi
 
 # Creation du dossier php si non existant
@@ -62,6 +43,7 @@ if [ ! -d /run/php ]; then
 	mkdir /run/php;
 fi
 
+# Attribution des droits a l'utilisateur pour le contenu du dossier /var/www/
 chown -R www-data:www-data /var/www/*
 chmod -R 755 /var/www/*
 

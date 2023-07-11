@@ -6,7 +6,7 @@
 #    By: wiozsert <wiozsert@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/06/24 18:42:37 by wiozsert          #+#    #+#              #
-#    Updated: 2023/07/11 15:02:46 by wiozsert         ###   ########.fr        #
+#    Updated: 2023/07/11 18:16:41 by wiozsert         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,7 +23,7 @@ logs:
 
 clean:
 	docker container stop nginx mariadb wordpress
-	docker network rm -f inception
+	docker network prune -f
 
 fclean: clean
 	sudo rm -rf /home/wiozsert/data/mariadb/*
