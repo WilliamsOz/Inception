@@ -6,14 +6,11 @@ then
 	echo "Wordpress is already installed."
 
 else
-	echo "Installation of Wordpress will start..."
-
 	cd /var/www/html/wordpress
 
-	# sleep 2
-
-	# Installation de wordpress
+	# Telechargement && Installation de wordpress
 	wp core download --locale=fr_FR --allow-root
+	echo "Installation of Wordpress will start..."
 	# Si le fichier de configuration de wordpress n'existe pas alors on le creer
 	wp config create	--allow-root \
 				--dbname=${SQL_DATABASE} \
@@ -28,7 +25,8 @@ else
 				--title=${SITE_TITLE} \
 				--admin_user=${ADMIN_USER} \
 				--admin_password=${ADMIN_PASSWORD} \
-				--admin_email=${ADMIN_EMAIL};
+				--admin_email=${ADMIN_EMAIL} \
+				--skip-email;
 
 	# Ajout d'un autre utilisateur
 	wp user create		--allow-root \
