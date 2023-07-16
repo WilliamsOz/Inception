@@ -10,7 +10,7 @@ else
 
 	# Telechargement && Installation de wordpress
 	wp core download --locale=fr_FR --allow-root
-	echo "Installation of Wordpress will start..."
+	echo "Installation of Wordpress..."
 	# Si le fichier de configuration de wordpress n'existe pas alors on le creer
 	wp config create	--allow-root \
 				--dbname=${SQL_DATABASE} \
