@@ -1,22 +1,14 @@
 #!bin/bash
 
-# set -eux
 # Demarre mysql
 service mysql start;
-
-
-# sleep 10;
-# mysql -u root -p${SQL_ROOT_PASSWORD}
 
 # Creer la table si non existante au nom de la variable d'environnement
 # SQL_DATABASE, indique dans le fichier .env qui sera envoyer par le
 # docker-compose.yml
 mysql -u root -p${SQL_ROOT_PASSWORD} -e "CREATE DATABASE IF NOT EXISTS \`${SQL_DATABASE}\`;"
 
-# Creer un utilisateur pouvant manipuler la table
-mysql -u root -p${SQL_ROOT_PASSWORD} -e "CREATE USER IF NOT EXISTS \`${SQL_USER}\`@'localhost' IDENTIFIED BY '${SQL_PASSWORD}';"
-
-# Attribution des droits a cet utilisateur
+# Creation d'un utilisateur et attribution des droits
 mysql -u root -p${SQL_ROOT_PASSWORD} -e "GRANT ALL PRIVILEGES ON \`${SQL_DATABASE}\`.* TO \`${SQL_USER}\`@'%' IDENTIFIED BY '${SQL_PASSWORD}';"
 
 sleep 2
